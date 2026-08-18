@@ -8,14 +8,19 @@ from .playlist import Playlist
 from .scraper import VidkingScraper
 
 VIDKING_EMBED_URL = "https://www.vidking.net/embed/tv/{series_id}/{season}/{episode}"
+OUTPUT_ROOT = Path("output")
 
 
 class VidkingPipeline:
     def __init__(self, series_id: str, season: str, episode: str, max_attempts: int = 5):
         self.video_url = VIDKING_EMBED_URL.format(series_id=series_id, season=season, episode=episode)
-        self.segments_dir = Path(f"{series_id}_{season}_{episode}")
+
+        series_dir = OUTPUT_ROOT / str(series_id)
+        episode_name = f"S{season}E{episode}"
+
+        self.segments_dir = series_dir / episode_name
         self.playlist_path = self.segments_dir / "playlist.m3u8"
-        self.output_path = self.segments_dir / f"{series_id}_{season}_{episode}.mp4"
+        self.output_path = series_dir / f"{episode_name}.mp4"
         self.max_attempts = max_attempts
 
     # downloads segments, concats, and returns True on success
